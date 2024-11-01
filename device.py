@@ -22,19 +22,20 @@ def connect_ssh(hostname):
     return ssh
 
 
-def reboot(hostname):
+def reboot(hostname,is_delete_config=False):
     """
     Resets(removes) configuration file and reboots device
     :param hostname:
     :return:
     """
     ssh = connect_ssh(hostname)
-    try:
-        remote_file_path = '/run/readwrite/app.cfg'  # Velocity configuration
+    try:        
+        if is_delete_config:
+            remote_file_path = '/run/readwrite/app.cfg'  # Velocity configuration
+            # Delete file
+            ssh.exec_command(f'rm {remote_file_path}')
+            print("Deleted config file")
         reboot_cmd = '/sbin/reboot'  # Reboot command
-        # Delete file
-        ssh.exec_command(f'rm {remote_file_path}')
-        print("Deleted config file")
         # Execute command
         ssh.exec_command(f'{reboot_cmd}')
         print("Reboot command issued")
